@@ -1,0 +1,50 @@
+:root {
+    --primary: #389393;
+    --secondary: #f5a25d;
+    --tertiary: #fa7f72;
+    --quatrinary: #6c6b67;
+    --light: #ebebeb;
+    --dark: #182c23;
+    --error: rgb(228, 46, 1);
+    --border-radius: 0.3rem;
+  }
+
+header {
+  background-color: var(--primary);
+  padding: 5px;
+}
+
+#title {
+    color: var(--tertiary);
+    margin: 5px;
+}
+
+#navigation {
+    padding: 10px;
+}
+
+.nav-item {
+    border-radius: 2rem;
+    background-color: var(--secondary);
+    margin: 10px;
+}
+
+.nav-link {
+    color: var(--light);
+}
+
+.nav-link:hover {
+    color: var(--quatrinary);
+}
+
+.blog{
+    border: 2px solid var(--dark);
+    width: 90%;
+    height: 40px;
+    margin: 5px;
+}
+
+#home {
+    display: flex;
+    justify-content: center;
+}

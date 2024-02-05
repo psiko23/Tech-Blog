@@ -1,12 +1,13 @@
 const router = require('express').Router();
 const {BlogPost, Comment, User} = require('../../models');
+const withAuth = require('../../utils/auth')
 
 // {
 // 	"title": "first post",
 // 	"body": "bloggin in style"
 // }
 
-router.get('/', async (req, res)=> {
+router.get('/', withAuth, async(req, res)=> {
     try{
         const posts = await BlogPost.findAll({
             include: {
@@ -22,21 +23,15 @@ router.get('/', async (req, res)=> {
     }
 });
 
-router.post('/', async (req, res)=> {
+router.post('/', withAuth, async (req, res)=> {
     try{
-
-        const userId = req.session.userId;
-
-        if(!userId) {
-            return res.status(400).json({ message: `Please login` })
-        }
 
         const title = req.body.title;
         const body = req.body.body;
         const newPost = await BlogPost.create({
             title, 
             body,
-            user_id: userId,
+            user_id: user_id,
         });
 
         res.status(200).json(newPost);
@@ -46,7 +41,7 @@ router.post('/', async (req, res)=> {
     }
 });
 
-router.get('/:blogpost_id', async (req, res) => {
+router.get('/:blogpost_id', withAuth, async (req, res) => {
     try{
         const post = await BlogPost.findByPk(req.params.blogpost_id, {
             include: [
@@ -78,18 +73,12 @@ router.get('/:blogpost_id', async (req, res) => {
     } 
 });
 
-router.post('/:blogpost_id/comments', (req, res) => {
+router.post('/:blogpost_id/comments', withAuth, async (req, res) => {
     try {
 
-        // console.log(`req.session`, req.session);
-        if (!req.session.loggedIn) {
-            res.status(400).json({ message: `Please login/signup to comment` });
-            return
-        }
-
-        const newComment = Comment.create({
+        const newComment = await Comment.create({
             content: req.body.content,
-            user_id: req.session.userId,
+            user_id: req.session.user_id,
             blogpost_id: req.params.blogpost_id,
         });
         res.status(200).json(newComment)
@@ -99,17 +88,12 @@ router.post('/:blogpost_id/comments', (req, res) => {
     }
 });
 
-router.put('/:blogpost_id', async (req, res) => {
+router.put('/:blogpost_id', withAuth, async (req, res) => {
     try{
-
-        if (!req.session.loggedIn) {
-            res.status(400).json({ message: `Please login to edit blog posts` });
-            return
-        }
 
         const postData = await BlogPost.findByPk(req.params.blogpost_id);
 
-        if (!postData || postData.user_id !== req.session.userId){
+        if (!postData || postData.user_id !== req.session.user_id){
             res.status(400).json({ message: `You may not edit this post!` });
             return
         };
